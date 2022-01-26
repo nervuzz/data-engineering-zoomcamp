@@ -175,5 +175,37 @@ SELECT 1
 Time: 0.099s
 ```
 
+## #Video 1.2.5
+1. Stop all running containers, especially `postgres`
+2. Install latest version of `Docker Compose V2`:
+```
+https://docs.docker.com/compose/cli-command/#install-on-linux
+```
+3. Verify installation:
+```
+docker compose version
+
+# Docker Compose version v2.2.3
+```
+4. Create the `docker-compose.yaml` which defines two services: `pg-database` and `pg-admin`
+5. Build and run services with Compose:
+```
+docker compose up --detach
+```
+6. Open web browser and navigate to:
+```
+http://127.0.0.1:8080/login
+```
+
+7. When you are done, stop services and clean up:
+```
+docker compose down
+
+[+] Running 3/3
+ ⠿ Container dockerpostgres-pg-admin-1         Removed       1.9s
+ ⠿ Container dockerpostgres-pg-database-1      Removed       0.7s
+ ⠿ Network dockerpostgres_default              Removed       0.7s
+```
+
 # GCP + Terraform
 # Homework
