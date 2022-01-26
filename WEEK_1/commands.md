@@ -210,4 +210,74 @@ docker compose down
 ```
 
 # GCP + Terraform
+
+## #Video 1.3.1
+Let's install `Terraform CLI` on our machine using commands from `Terraform` homepage:
+```
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+sudo apt-get update && sudo apt-get install terraform
+``` 
+
+If everything went fine we should be able to check `Terraform CLI` version:
+```sql
+terraform version
+
+# Terraform v1.1.4
+# on linux_amd64
+```
+
+We need `Google Cloud SDK` as well but it has some dependencies:
+```
+# You should have all of them already installed
+
+sudo apt-get install apt-transport-https ca-certificates gnupg
+```
+
+Now we can install the `Cloud SDK`:
+```
+# https://cloud.google.com/sdk/docs/quickstart#debianubuntu
+
+echo "deb https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt-get update && sudo apt-get install google-cloud-sdk
+```
+
+If everything went fine we should be able to check `gcloud ` version:
+```sql
+gcloud version
+
+# Google Cloud SDK 370.0.0
+# alpha 2022.01.21
+# beta 2022.01.21
+# bq 2.0.73
+# core 2022.01.21
+# gsutil 5.6
+```
+
+According to the video material you should open `Google Cloud Platform` and:
+
+1. Create new project (if necessary)
+2. Setup service account & authentication for this project
+3. Download service account authentication key of `JSON` type
+4. Set an environment variable pointing to the `JSON` key:
+```
+export GOOGLE_APPLICATION_CREDENTIALS="<path/to/key.json"
+```
+5. Authorize the `Cloud SDK` tools to access `Google Cloud` using your user account:
+```
+gcloud auth application-default login
+```
+6. Add new project roles to your service account:
+```
+BigQuery Admin
+Storage Admin
+Storage Object Admin
+```
+7. Enable these APIs for your project:
+```
+https://console.cloud.google.com/apis/library/iam.googleapis.com
+https://console.cloud.google.com/apis/library/iamcredentials.googleapis.com
+```
+
 # Homework
