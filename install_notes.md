@@ -12,7 +12,7 @@ Prequesities
 3. Install Python 3.9 (they use 3.8)
    - `sudo apt install software-properties-common`
    - `sudo add-apt-repository ppa:deadsnakes/ppa`
-   - `sudo apt install python3.9 python3.9-dev python3.9-venv python3-testresources`
+   - `sudo apt install python3.9 python3.9-dev python3.9-venv python3-testresources python-dev libpq-dev libevent-dev`
 4. Update `pip wheel setuptools`
    - `python3.9 -m pip install --upgrade pip wheel setuptools`
 5. Install Docker Engine

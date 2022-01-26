@@ -2,7 +2,7 @@
 -----------------------
 
 # Docker + Postgres
-## #Video 1
+## #Video 1.2.1
 Build Docker image (name: `de-camp-week-1`, tag: `v1`) from Dockerfile in current dir:
 ```
 docker build -t de-camp-week-1:v1 .
@@ -13,13 +13,13 @@ Run (*command in*) container in an interactive mode, remove it at exit, pass `20
 docker run -it --rm de-camp-week-1:v1 2022-01-21
 ```
 
-## #Video 2
+## #Video 1.2.2
 Activate Python virtual environment:
 ```
 source ~/venvs/decamp/bin/activate
 ```
 
-Create new work directory:
+Create a new work directory:
 ```
 mkdir 'Docker + Postgres'
 cd 'Docker + Postgres'
@@ -41,7 +41,7 @@ Start Docker daemon:
 sudo dockerd
 ```
 
-Spin up a `postgresql12` instance and mount `ny_taxi_postgres_data` dir to it:
+Spin up a `postgresql13` instance and mount `ny_taxi_postgres_data` dir to it:
 ```
 # WARNING: `ny_taxi_postgres_data` will be created in current working directory!
 
@@ -51,7 +51,7 @@ docker run -it \
    -e POSTGRES_DB="ny_taxi" \
    -v "$(pwd)/ny_taxi_postgres_data":/var/lib/postgresql/data \
    -p 5432:5432 \
-   postgres:12
+   postgres:13
 ```
 
 Start `JupyterLab`:
@@ -59,7 +59,7 @@ Start `JupyterLab`:
 jupyter lab
 ```
 
-If everything went smooth, after data ingestion we should have all data in DB:
+If everything went smooth, after the data ingestion we should have all records in DB:
 
 ```sql
 decamp@localhost:ny_taxi> SELECT COUNT(1) FROM yellow_taxi_data;
@@ -79,6 +79,100 @@ decamp@localhost:ny_taxi> SELECT COUNT(1) FROM zones;
 +-------+
 SELECT 1
 Time: 0.002s
+```
+
+## #Video 1.2.3
+Create Docker network for connecting ingestion script and database:
+```
+docker network create pg-network
+```
+
+Spin up a `postgresql13` instance and mount `ny_taxi_postgres_data` dir to it:
+```
+# WARNING: `ny_taxi_postgres_data` will be created in current working directory!
+
+# Notice new parameter `--network` and `--name`
+
+docker run -it \
+   -e POSTGRES_USER="decamp" \
+   -e POSTGRES_PASSWORD="decamp123" \
+   -e POSTGRES_DB="ny_taxi" \
+   -v "$(pwd)/ny_taxi_postgres_data":/var/lib/postgresql/data \
+   -p 5432:5432 \
+   --name pg-database \
+   --network pg-network \
+   postgres:13
+```
+
+## #Video 1.2.4
+1. Create the `ingest_data.py` script
+2. Update or create a new Docker file which make use of data ingestion script
+3. Drop or just truncate the `yellow_taxi_data` table before running the container:
+```sql
+# Execute this query in pgcli
+
+decamp@localhost:ny_taxi> TRUNCATE TABLE yellow_taxi_data;
+TRUNCATE TABLE
+Time: 0.041s
+
+decamp@localhost:ny_taxi> SELECT COUNT(1) FROM yellow_taxi_data;
++-------+
+| count |
+|-------|
+| 0     |
++-------+
+SELECT 1
+Time: 0.008s
+```
+
+4. Build Docker image (name: `de-camp-week-1`, tag: `v2`) from Dockerfile in current dir:
+```
+docker build -t de-camp-week-1:v2 .
+```
+
+5. Run command in the data ingestion container (the same network as DB):
+```
+docker run -it --network=pg-network de-camp-week-1:v2 \
+   --user=decamp \
+   --password=decamp123 \
+   --host=pg-database \
+   --db=ny_taxi \
+   --table_name=yellow_taxi_data \
+   --url="https://s3.amazonaws.com/nyc-tlc/trip+data/yellow_tripdata_2021-01.csv"
+```
+
+6. While the ingestion script is processing consecutive data chunks, table is populated:
+```sql
+# Container
+[1] Chunk inserted, took 11.470 seconds
+[2] Chunk inserted, took 12.037 seconds
+
+# Database
+decamp@0:ny_taxi> SELECT COUNT(1) FROM yellow_taxi_data;
++--------+
+| count  |
+|--------|
+| 200000 |
++--------+
+SELECT 1
+Time: 0.044s
+
+# Container
+[...]
+[12] Chunk inserted, took 11.004 seconds
+[13] Chunk inserted, took 11.171 seconds
+[14] Chunk inserted, took 6.602 seconds
+Data ingestion finished! Total 153.050 seconds
+
+# Database
+decamp@0:ny_taxi> SELECT COUNT(1) FROM yellow_taxi_data;
++---------+
+| count   |
+|---------|
+| 1369765 |
++---------+
+SELECT 1
+Time: 0.099s
 ```
 
 # GCP + Terraform
