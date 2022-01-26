@@ -2,7 +2,9 @@
 -----------------------
 
 # Docker + Postgres
+
 ## #Video 1.2.1
+
 Build Docker image (name: `de-camp-week-1`, tag: `v1`) from Dockerfile in current dir:
 ```
 docker build -t de-camp-week-1:v1 .
@@ -14,6 +16,7 @@ docker run -it --rm de-camp-week-1:v1 2022-01-21
 ```
 
 ## #Video 1.2.2
+
 Activate Python virtual environment:
 ```
 source ~/venvs/decamp/bin/activate
@@ -60,7 +63,6 @@ jupyter lab
 ```
 
 If everything went smooth, after the data ingestion we should have all records in DB:
-
 ```sql
 decamp@localhost:ny_taxi> SELECT COUNT(1) FROM yellow_taxi_data;
 +---------+
