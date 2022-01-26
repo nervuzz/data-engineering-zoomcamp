@@ -280,4 +280,27 @@ https://console.cloud.google.com/apis/library/iam.googleapis.com
 https://console.cloud.google.com/apis/library/iamcredentials.googleapis.com
 ```
 
+## #Video 1.3.2
+Create a `.terraform-version` and put your `Terraform CLI` version there:
+```sql
+cat .terraform-version
+
+# 1.1.4
+```
+
+Create `main.tf` and `variables.tf` files acccording to the video material and initialize `Terraform`:
+```
+terraform init
+```
+
+Do a dry run of your `Terraform` plan:
+```
+terraform plan
+```
+
+Create/update/delete resources using `Terraform`:
+```
+terraform apply
+```
+
 # Homework
