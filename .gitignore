@@ -3,7 +3,6 @@ WEEK_1/Docker + Postgres/taxi+_zone_lookup.csv
 WEEK_1/Docker + Postgres/yellow_tripdata_2021-01.csv
 WEEK_1/Docker + Postgres/.ipynb_checkpoints
 WEEK_1/GCP + Terraform/avid-racer-339419-c3569e947327.json
-WEEK_1/GCP + Terraform/.terraform.lock.hcl
-WEEK_1/GCP + Terraform/terraform.tfstate
-WEEK_1/GCP + Terraform/.terraform/terraform.tfstate
-WEEK_1/GCP + Terraform/.terraform/providers/registry.terraform.io/hashicorp/google/4.8.0/linux_amd64/terraform-provider-google_v4.8.0_x5
+WEEK_1/GCP + Terraform/.terraform.*
+WEEK_1/GCP + Terraform/terraform.*
+WEEK_1/GCP + Terraform/.terraform/*
