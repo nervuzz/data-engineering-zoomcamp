@@ -298,9 +298,48 @@ Do a dry run of your `Terraform` plan:
 terraform plan
 ```
 
-Create/update/delete resources using `Terraform`:
+Create/update/delete infrastructure using `Terraform`:
 ```
 terraform apply
 ```
 
-# Homework
+In order to avoid costs destroy created infrastructure:
+```
+terraform destroy
+```
+
+# Homework [[Questions]](https://github.com/DataTalksClub/data-engineering-zoomcamp/blob/main/week_1_basics_n_setup/homework.md)
+
+Question 1:
+```
+gcloud version
+
+# Google Cloud SDK 370.0.0
+```
+
+Question 2:
+```
+# No output here (too verbose), pasted into the homework form
+```
+
+Question 3:
+```sql
+decamp@0:ny_taxi> SELECT count(1) FROM yellow_taxi_data WHERE tpep_pickup_datetime::DATE = '2021-01-15';
+
++-------+
+| count |
+|-------|
+| 53024 |
++-------+
+```
+
+Question 4:
+```sql
+decamp@0:ny_taxi> SELECT tpep_pickup_datetime, tip_amount FROM yellow_taxi_data WHERE tpep_pickup_datetime BETWEEN '2021-01-01' AND '2021-01-31' ORDER BY 2 DESC LIMIT 1;
+
++----------------------+------------+
+| tpep_pickup_datetime | tip_amount |
+|----------------------+------------|
+| 2021-01-20 11:22:05  | 1140.44    |
++----------------------+------------+
+```
