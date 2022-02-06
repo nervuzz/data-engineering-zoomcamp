@@ -20,17 +20,7 @@ path_to_local_home = os.environ.get("AIRFLOW_HOME", "/opt/airflow/")
 parquet_file = dataset_file.replace('.csv', '.parquet')
 BIGQUERY_DATASET = os.environ.get("BIGQUERY_DATASET", 'trips_data_all')
 
-logging.warning(f"Printing os env")
-logging.warning(print(os.environ))
-# logging.warning(f"Printing curdir")
-# logging.warning(os.getcwd())
-logging.warning(f"Listing curdir")
-logging.warning(os.listdir(os.curdir))
-# from pathlib import Path
-# x = r"/.google/credentials/google_credentials.json"
-# f = Path(x).read_text()
-# logging.warning(f"Print json")
-# logging.warning(f)
+
 def format_to_parquet(src_file):
     if not src_file.endswith('.csv'):
         logging.error("Can only accept source files in CSV format, for the moment")

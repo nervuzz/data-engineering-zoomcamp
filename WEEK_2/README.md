@@ -174,6 +174,58 @@ I've came up with this handy command which DELETES everything related to compose
 docker compose down --volumes && docker container prune -f && docker image prune -af
 ```
 
-# Ingesting data to GCP with Airflow
-# Ingesting data to Local Postgres with Airflow
 # Homework
+
+After running the `yellow_taxi_to_gcs_dag` DAG for the first time I've noticed that despite CSV file was downloaded to the container, for some unknown reason the `convert_csv_to_parquet` task fails with some strange `*SIG*KILL*` error in task instance logs.
+
+I do not remember the actual name of the bash exit status (already deleted old logs), however the first thing that came to my mind was like "*damn, single CSV file has at least 600MB!*". 
+
+And then I had a flash - maybe `pyarrow` process reached the memory usage limit in scheduler's container so Docker engine killed it instantly and thus there was no human readable error. 
+
+Let's give it a try and update the `docker-compose.yml`:
+
+- `dtc-de_postgres_1`  from 300 MiB to 150 MiB
+- `dtc-de_scheduler_1` from 1 GiB to 2 GiB
+- `dtc-de_webserver_1` from 1300 MiB to 1400 MiB
+
+And just in case we can limit the number of running concurrent instances of a DAG :
+```python
+# yellow_taxi_to_gcs_dag.py
+
+...
+
+with DAG(
+    dag_id="yellow_taxi_to_gcs_dag",
+    schedule_interval="@monthly",
+    default_args=default_args,
+    catchup=True,
+    max_active_runs=2,  # <--- here
+    tags=["dtc-de"],
+) as dag:
+    
+    ...
+
+```
+
+Jackpot! 
+
+## `yellow_taxi_to_gcs_dag`
+<br>
+
+![image1](https://user-images.githubusercontent.com/15368390/152701482-d16ac168-379f-4441-ae00-f5993ffa3274.png)
+
+![image2](https://user-images.githubusercontent.com/15368390/152701957-744bc2df-a2a8-43a5-94d7-ef5bae3fb045.png)
+
+## `for_hire_veh_to_gcs_dag`
+<br>
+
+![image3](https://user-images.githubusercontent.com/15368390/152702145-9f0d9827-a829-4c15-814d-2a570deadcfb.png)
+
+![image4](https://user-images.githubusercontent.com/15368390/152702224-13d36963-4892-4efb-91ca-c489faedb96e.png)
+
+## `taxi_zone_lookup_to_gcs_dag`
+<br>
+
+![image5](https://user-images.githubusercontent.com/15368390/152702429-a5de00da-3e90-4ef6-a0d3-4f0926f6feb9.png)
+
+![image6](https://user-images.githubusercontent.com/15368390/152702504-a0aa3379-bc5a-417c-bdae-71354b515658.png)
