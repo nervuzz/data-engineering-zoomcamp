@@ -14,7 +14,7 @@ services:
         deploy:
             resources:
                 limits: 
-                    memory: 300M
+                    memory: 150M
 
     scheduler:
         build:
@@ -33,10 +33,11 @@ services:
             - ./plugins:/opt/airflow/plugins
             - ./scripts:/opt/airflow/scripts
             - ./.google/credentials/:/.google/credentials:ro
+            - ./raw:/opt/airflow/raw
         deploy:
             resources:
                 limits: 
-                    memory: 1g
+                    memory: 2g
 
     webserver:
         build:
@@ -56,6 +57,7 @@ services:
             - ./plugins:/opt/airflow/plugins
             - ./scripts:/opt/airflow/scripts
             - ./.google/credentials:/.google/credentials:ro
+            - ./raw:/opt/airflow/raw
         # user: "${AIRFLOW_UID:-50000}:0"
         ports:
             - "8080:8080"

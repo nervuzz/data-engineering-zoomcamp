@@ -9,3 +9,5 @@ WEEK_1/GCP + Terraform/.terraform/*
 WEEK_2/airflow/.google*
 WEEK_2/airflow/logs/*
 WEEK_2/airflow/dags/__pycache__/*
+*.csv
+*.parquet
