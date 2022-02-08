@@ -88,6 +88,25 @@ Table `sharding`: *refers to dividing large datasets into separate tables and ad
     - know how to split query into smaller, modified queries then sent to Leaf Nodes which access data storage
 
 ## #Video 3.3.3 - Integrating BigQuery with Airflow (+ Week 2 Review)
+- Instructor created tasks for all necessary steps for `yellow_taxi` dataset but there is `green_taxi` dataset as well in the GCS
+- In order to `Don't Repeat Yourself (DRY)` we won't create copy of DAG
+- We can wrap tasks in simple for loop and it will *duplicate* them
+```python
+for colour in ["yellow", "green]:
+    t1 = DummyOperator(
+        task_id=f"move_{colour}_tripdata_files_task",
+        ...
+    )
+    
+    t2 = DummyOperator(
+        task_id=f"bq_{colour}_tripdata_external_table_task",
+        ...
+    )
+
+    t1 >> t2 >> ...
+```
+
+![image3](https://user-images.githubusercontent.com/15368390/153094249-4c9b3c5d-9696-4fc2-bcf9-3ed3ef56597e.png)
 
 # Homework
 ## Prerequisites
