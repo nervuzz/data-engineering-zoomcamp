@@ -36,14 +36,15 @@
     - Limit of 4k partitions/table
         - Hourly partitioning may reach the limit --> Expire strategy
 - BQ table clustering
-    - **Column order is important** == Sorting order
+    - **Column order is important** == Effective sorting order of columns
     - Cluster columns if you want to aggregate on them and/or filter
     - Limit of 4 columns to cluster/table
     - Columns must be of common (top-level) type
 - Use with caution
     - When the data size is < 1GB then partitioning/clustering most probably will not give you any improvement in query performance. What's more, it can slow down your queries because of the overhead that partitions/clusters brought behind the scenes.
 - Partitioning vs Clustering
-    - You loose cost estimates when clustering
+    - You loose cost estimates when clustering alone
+        - You can set a max query price limit
     - Partitions can be created/deleted/moved
     - Clustering enables you to filter/agg on up to 4 columns
     - Clustering dedicated to data with high cardinality
@@ -64,7 +65,28 @@
 *Example: cardinality of a M&Ms packet is rather small (6 colors)*
 
 ## #Video 3.2.1 - BigQuery Best Practices
+- Make use of query cost estimates
+    - does not work for external tables
+    - does not work for clustered (only) tables
+- Frequently used CTEs in multiple locations? Consider materializing them
+- OLAP <--> use denormalized data
+- Use external tables wisely
+    - cost of reading from source (Cloud Storage, Drive or Cloud Bigtable)
+    - low performance
+    - but it's fine in ETL, or with frequently changing data
+- Use partitioning instead of date-named tables. Creating a large number of `table shards` has performance impacts that outweigh any cost benefits (schema, metadata, permissions etc.)
+- In your query place the largest table first and next with decreasing size
+
+Table `sharding`: *refers to dividing large datasets into separate tables and adding a suffix to each table name.*
+
 ## #Video 3.2.2 - Internals of BigQuery
+- Storage in columnar format, very cheap
+- The cost is generated while computing (R/W)
+- Storage and compute on different hardware
+    - connected with a ~1TB/sec network
+- `Dremel` - query execution engine
+    - know how to split query into smaller, modified queries then sent to Leaf Nodes which access data storage
+
 ## #Video 3.3.3 - Integrating BigQuery with Airflow (+ Week 2 Review)
 
 # Homework
