@@ -11,3 +11,4 @@ WEEK_2/airflow/logs/*
 WEEK_2/airflow/dags/__pycache__/*
 *.csv
 *.parquet
+WEEK_4/logs*
