@@ -216,6 +216,13 @@ Jackpot!
 
 ![image2](https://user-images.githubusercontent.com/15368390/152701957-744bc2df-a2a8-43a5-94d7-ef5bae3fb045.png)
 
+## `green_taxi_to_gcs_dag`
+<br>
+
+![image7](https://user-images.githubusercontent.com/15368390/153417249-7962ab06-d3e0-4b95-a7b1-693d29c18ac1.png)
+
+![image8](https://user-images.githubusercontent.com/15368390/153417528-05fe2772-26ce-4e41-b0d5-bc1b78dfa75e.png)
+
 ## `for_hire_veh_to_gcs_dag`
 <br>
 
