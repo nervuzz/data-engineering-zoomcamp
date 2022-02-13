@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: staging
+    database: avid-racer-339419  # BQ project name
+    schema: trips_data_all # BQ dataset name
+    tables:
+      - name: external_table_green
+      - name: external_table  # yellow

@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: end_user
+    database: avid-racer-339419  # BQ project name
+    schema: week_4 # BQ dataset name
+    tables:
+      - name: dim_zones
+      - name: stg_green_tripdata
+      - name: stg_yellow_tripdata
+      - name: taxi_zone_lookup
