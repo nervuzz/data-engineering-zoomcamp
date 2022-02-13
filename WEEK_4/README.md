@@ -395,3 +395,95 @@ bq ls "avid-racer-339419:week_4"
 #   stg_yellow_tripdata   VIEW                                                   
 #   taxi_zone_lookup      TABLE      
 ```
+
+## Testing and documenting dbt models
+`Tests` in dbt are just a SQL queries that verifies some assumptions we made about our data and results in the count of failing records. You can create custom tests (queries), however dbt contains some basic column values tests one can use out of the box:
+- Unique
+- Not NULL
+- Accepted values
+- Relationships *(is FK to another table)*
+
+Like everything else, tests can be configured in a YAML file (example below). When test is failed you will see warnings (or other severity level per config) in the console / logs.
+
+`Documentation` of your project can be generated using dbt CLI. The documentation output is a very nice HTML website.
+
+This is an example of a model description which dbt will use to generate the documentation.
+How dbt knows that? Because of the `models` property, which should be used in configuration files under `/models` directory (by default, but you can change that).
+
+```yml
+# schema.yml
+(...)
+models:
+  - name: my_model
+    description: Some description
+    columns:
+      - name: id
+        description: Primary key for this table
+        tests:
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
+```
+
+**Running tests:**
+```sh
+dbt test
+
+17:57:35  Running with dbt=1.0.1
+17:57:35  Found 5 models, 11 tests, 0 snapshots, 0 analyses, 376 macros, 0 operations, 1 seed file, 7 sources, 0 exposures, 0 metrics
+17:57:35  
+17:57:36  Concurrency: 4 threads (target='dev')
+17:57:36  
+17:57:36  1 of 11 START test accepted_values_stg_green_tripdata_Payment_type__False___var_payment_type_values_ [RUN]
+17:57:36  2 of 11 START test accepted_values_stg_yellow_tripdata_Payment_type__False___var_payment_type_values_ [RUN]
+17:57:36  3 of 11 START test not_null_dm_monthly_zone_revenue_revenue_monthly_total_amount [RUN]
+17:57:36  4 of 11 START test not_null_stg_green_tripdata_tripid........................... [RUN]
+17:57:38  3 of 11 PASS not_null_dm_monthly_zone_revenue_revenue_monthly_total_amount...... [PASS in 2.36s]
+17:57:38  5 of 11 START test not_null_stg_yellow_tripdata_tripid.......................... [RUN]
+17:57:39  1 of 11 PASS accepted_values_stg_green_tripdata_Payment_type__False___var_payment_type_values_ [PASS in 2.95s]
+17:57:39  2 of 11 PASS accepted_values_stg_yellow_tripdata_Payment_type__False___var_payment_type_values_ [PASS in 2.96s]
+17:57:39  4 of 11 PASS not_null_stg_green_tripdata_tripid................................. [PASS in 2.95s]
+17:57:39  6 of 11 START test relationships_stg_green_tripdata_Pickup_locationid__locationid__ref_taxi_zone_lookup_ [RUN]
+17:57:39  7 of 11 START test relationships_stg_green_tripdata_dropoff_locationid__locationid__ref_taxi_zone_lookup_ [RUN]
+17:57:39  8 of 11 START test relationships_stg_yellow_tripdata_Pickup_locationid__locationid__ref_taxi_zone_lookup_ [RUN]
+17:57:40  5 of 11 PASS not_null_stg_yellow_tripdata_tripid................................ [PASS in 2.01s]
+17:57:40  9 of 11 START test relationships_stg_yellow_tripdata_dropoff_locationid__locationid__ref_taxi_zone_lookup_ [RUN]
+17:57:41  6 of 11 PASS relationships_stg_green_tripdata_Pickup_locationid__locationid__ref_taxi_zone_lookup_ [PASS in 2.10s]
+17:57:41  10 of 11 START test unique_stg_green_tripdata_tripid............................ [RUN]
+17:57:41  7 of 11 PASS relationships_stg_green_tripdata_dropoff_locationid__locationid__ref_taxi_zone_lookup_ [PASS in 2.31s]
+17:57:41  8 of 11 PASS relationships_stg_yellow_tripdata_Pickup_locationid__locationid__ref_taxi_zone_lookup_ [PASS in 2.31s]
+17:57:41  11 of 11 START test unique_stg_yellow_tripdata_tripid........................... [RUN]
+17:57:42  9 of 11 PASS relationships_stg_yellow_tripdata_dropoff_locationid__locationid__ref_taxi_zone_lookup_ [PASS in 1.61s]
+17:57:43  10 of 11 PASS unique_stg_green_tripdata_tripid.................................. [PASS in 1.59s]
+17:57:43  11 of 11 PASS unique_stg_yellow_tripdata_tripid................................. [PASS in 1.70s]
+17:57:43  
+17:57:43  Finished running 11 tests in 7.92s.
+17:57:43  
+17:57:43  Completed successfully
+17:57:43  
+17:57:43  Done. PASS=11 WARN=0 ERROR=0 SKIP=0 TOTAL=11
+```
+
+Generated documentation:
+```sh
+dbt docs generate
+
+18:08:52  Done.
+18:08:52  Building catalog
+18:08:57  Catalog written to /home/nervuzz/repos/data-engineering-zoomcamp/WEEK_4/taxi_rides_ny/target/catalog.json
+```
+```sh
+dbt docs serve
+
+18:09:35  Running with dbt=1.0.1
+18:09:35  Serving docs at 0.0.0.0:8080
+18:09:35  To access from your browser, navigate to:  http://localhost:8080
+18:09:35  
+18:09:35  
+18:09:35  Press Ctrl+C to exit.
+127.0.0.1 - - [13/Feb/2022 19:09:43] "GET / HTTP/1.1" 200 -
+```
+![website](https://user-images.githubusercontent.com/15368390/153768930-e5a4fd52-5570-441e-b93e-9b1e7d6f494a.png)
+
+![lineage](https://user-images.githubusercontent.com/15368390/153768958-ee1d835f-f838-4d02-885e-22bd725dac40.png)
