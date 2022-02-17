@@ -7,6 +7,7 @@ sources:
     tables:
       - name: dim_zones
       - name: dm_monthly_zone_revenue
+      - name: stg_fhv_tripdata
       - name: stg_green_tripdata
       - name: stg_yellow_tripdata
       - name: taxi_zone_lookup
@@ -34,5 +35,9 @@ models:
         tests:
           - not_null:
               severity: error
-      
+
+  - name: fact_fhv_trips
+    description: >
+      FHV Taxi trips corresponding to both service zones (Green and yellow).
+      The table contains records where both pickup and dropoff locations are valid and known zones.     
       

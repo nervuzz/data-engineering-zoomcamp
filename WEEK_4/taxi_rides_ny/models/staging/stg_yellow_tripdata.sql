@@ -4,7 +4,7 @@ WITH tripdata as (
    SELECT
     *,
     row_number() OVER(PARTITION BY vendorid, tpep_pickup_datetime) AS rn
-    FROM {{ source("staging", "external_table") }}
+    FROM {{ source("staging", "external_table_yellow") }}
     WHERE vendorid IS NOT NULL 
 )
 SELECT
@@ -12,7 +12,7 @@ SELECT
     {{ dbt_utils.surrogate_key(['vendorid', 'tpep_pickup_datetime']) }} as tripid,
     cast(vendorid as integer) as vendorid,
     cast(ratecodeid as integer) as ratecodeid,
-    cast(pulocationid as integer) as  pickup_locationid,
+    cast(pulocationid as integer) as pickup_locationid,
     cast(dolocationid as integer) as dropoff_locationid,
     
     -- timestamps

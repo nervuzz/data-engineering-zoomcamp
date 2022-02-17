@@ -104,6 +104,23 @@ FROM `trips_data_all.external_table_green`;
 -- Query completed in 1.324 sec
 ```
 
+And re-creating the external table for `yellow_taxi` data:
+```sql
+-- Create external table from `yellow_tripdata_20*` parquet files stored in GCS
+CREATE OR REPLACE EXTERNAL TABLE `trips_data_all.external_table_yellow`
+OPTIONS (
+    format = "PARQUET",
+    uris = ["gs://dtc_data_lake_avid-racer-339419/yellow_tripdata_20*"]
+);
+-- Query completed in 0.929 sec
+```
+```sql
+SELECT COUNT(1)
+FROM `trips_data_all.external_table_yellow`;
+-- 109047518
+-- Query completed in 1.254 sec
+```
+
 # Starting a dbt project
 ## Alternative z: Using BigQuery + dbt core (locally)
 I do not know why this option was not included 🤷‍♂️
@@ -154,7 +171,7 @@ sources:
     schema: trips_data_all # BQ dataset name
     tables:
       - name: external_table_green
-      - name: external_table  # yellow
+      - name: external_table_yellow
 ```
 
 ```sql
@@ -425,44 +442,59 @@ models:
           - not_null:
               severity: warn
 ```
+<br>
+**dbt build with all data and tests:**
 
-**Running tests:**
 ```sh
-dbt test
+dbt build --var "is_test_run: false"
 
-17:57:35  Running with dbt=1.0.1
-17:57:35  Found 5 models, 11 tests, 0 snapshots, 0 analyses, 376 macros, 0 operations, 1 seed file, 7 sources, 0 exposures, 0 metrics
-17:57:35  
-17:57:36  Concurrency: 4 threads (target='dev')
-17:57:36  
-17:57:36  1 of 11 START test accepted_values_stg_green_tripdata_Payment_type__False___var_payment_type_values_ [RUN]
-17:57:36  2 of 11 START test accepted_values_stg_yellow_tripdata_Payment_type__False___var_payment_type_values_ [RUN]
-17:57:36  3 of 11 START test not_null_dm_monthly_zone_revenue_revenue_monthly_total_amount [RUN]
-17:57:36  4 of 11 START test not_null_stg_green_tripdata_tripid........................... [RUN]
-17:57:38  3 of 11 PASS not_null_dm_monthly_zone_revenue_revenue_monthly_total_amount...... [PASS in 2.36s]
-17:57:38  5 of 11 START test not_null_stg_yellow_tripdata_tripid.......................... [RUN]
-17:57:39  1 of 11 PASS accepted_values_stg_green_tripdata_Payment_type__False___var_payment_type_values_ [PASS in 2.95s]
-17:57:39  2 of 11 PASS accepted_values_stg_yellow_tripdata_Payment_type__False___var_payment_type_values_ [PASS in 2.96s]
-17:57:39  4 of 11 PASS not_null_stg_green_tripdata_tripid................................. [PASS in 2.95s]
-17:57:39  6 of 11 START test relationships_stg_green_tripdata_Pickup_locationid__locationid__ref_taxi_zone_lookup_ [RUN]
-17:57:39  7 of 11 START test relationships_stg_green_tripdata_dropoff_locationid__locationid__ref_taxi_zone_lookup_ [RUN]
-17:57:39  8 of 11 START test relationships_stg_yellow_tripdata_Pickup_locationid__locationid__ref_taxi_zone_lookup_ [RUN]
-17:57:40  5 of 11 PASS not_null_stg_yellow_tripdata_tripid................................ [PASS in 2.01s]
-17:57:40  9 of 11 START test relationships_stg_yellow_tripdata_dropoff_locationid__locationid__ref_taxi_zone_lookup_ [RUN]
-17:57:41  6 of 11 PASS relationships_stg_green_tripdata_Pickup_locationid__locationid__ref_taxi_zone_lookup_ [PASS in 2.10s]
-17:57:41  10 of 11 START test unique_stg_green_tripdata_tripid............................ [RUN]
-17:57:41  7 of 11 PASS relationships_stg_green_tripdata_dropoff_locationid__locationid__ref_taxi_zone_lookup_ [PASS in 2.31s]
-17:57:41  8 of 11 PASS relationships_stg_yellow_tripdata_Pickup_locationid__locationid__ref_taxi_zone_lookup_ [PASS in 2.31s]
-17:57:41  11 of 11 START test unique_stg_yellow_tripdata_tripid........................... [RUN]
-17:57:42  9 of 11 PASS relationships_stg_yellow_tripdata_dropoff_locationid__locationid__ref_taxi_zone_lookup_ [PASS in 1.61s]
-17:57:43  10 of 11 PASS unique_stg_green_tripdata_tripid.................................. [PASS in 1.59s]
-17:57:43  11 of 11 PASS unique_stg_yellow_tripdata_tripid................................. [PASS in 1.70s]
-17:57:43  
-17:57:43  Finished running 11 tests in 7.92s.
-17:57:43  
-17:57:43  Completed successfully
-17:57:43  
-17:57:43  Done. PASS=11 WARN=0 ERROR=0 SKIP=0 TOTAL=11
+
+19:53:06  Running with dbt=1.0.1
+19:53:06  Unable to do partial parsing because config vars, config profile, or config target have changed
+19:53:08  Found 5 models, 11 tests, 0 snapshots, 0 analyses, 376 macros, 0 operations, 1 seed file, 7 sources, 0 exposures, 0 metrics
+19:53:08  
+19:53:10  Concurrency: 4 threads (target='dev')
+19:53:10  
+19:53:10  1 of 17 START view model week_4.stg_green_tripdata.............................. [RUN]
+19:53:10  2 of 17 START view model week_4.stg_yellow_tripdata............................. [RUN]
+19:53:10  3 of 17 START seed file week_4.taxi_zone_lookup................................. [RUN]
+19:53:11  1 of 17 OK created view model week_4.stg_green_tripdata......................... [OK in 1.13s]
+19:53:11  4 of 17 START test accepted_values_stg_green_tripdata_Payment_type__False___var_payment_type_values_ [RUN]
+19:53:11  5 of 17 START test not_null_stg_green_tripdata_tripid........................... [RUN]
+19:53:11  2 of 17 OK created view model week_4.stg_yellow_tripdata........................ [OK in 1.29s]
+19:53:11  6 of 17 START test unique_stg_green_tripdata_tripid............................. [RUN]
+19:53:14  3 of 17 OK loaded seed file week_4.taxi_zone_lookup............................. [INSERT 265 in 4.56s]
+19:53:14  7 of 17 START test accepted_values_stg_yellow_tripdata_Payment_type__False___var_payment_type_values_ [RUN]
+19:53:14  5 of 17 PASS not_null_stg_green_tripdata_tripid................................. [PASS in 3.70s]
+19:53:14  8 of 17 START test not_null_stg_yellow_tripdata_tripid.......................... [RUN]
+19:53:15  4 of 17 PASS accepted_values_stg_green_tripdata_Payment_type__False___var_payment_type_values_ [PASS in 4.15s]
+19:53:15  9 of 17 START test unique_stg_yellow_tripdata_tripid............................ [RUN]
+19:53:15  6 of 17 PASS unique_stg_green_tripdata_tripid................................... [PASS in 4.50s]
+19:53:15  10 of 17 START table model week_4.dim_zones..................................... [RUN]
+19:53:18  10 of 17 OK created table model week_4.dim_zones................................ [CREATE TABLE (265.0 rows, 14.2 KB processed) in 3.14s]
+19:53:18  11 of 17 START test relationships_stg_green_tripdata_Pickup_locationid__locationid__ref_taxi_zone_lookup_ [RUN]
+19:53:21  11 of 17 PASS relationships_stg_green_tripdata_Pickup_locationid__locationid__ref_taxi_zone_lookup_ [PASS in 2.83s]
+19:53:21  12 of 17 START test relationships_stg_green_tripdata_dropoff_locationid__locationid__ref_taxi_zone_lookup_ [RUN]
+19:53:23  7 of 17 PASS accepted_values_stg_yellow_tripdata_Payment_type__False___var_payment_type_values_ [PASS in 9.04s]
+19:53:23  13 of 17 START test relationships_stg_yellow_tripdata_Pickup_locationid__locationid__ref_taxi_zone_lookup_ [RUN]
+19:53:24  12 of 17 PASS relationships_stg_green_tripdata_dropoff_locationid__locationid__ref_taxi_zone_lookup_ [PASS in 3.07s]
+19:53:24  14 of 17 START test relationships_stg_yellow_tripdata_dropoff_locationid__locationid__ref_taxi_zone_lookup_ [RUN]
+19:53:25  8 of 17 PASS not_null_stg_yellow_tripdata_tripid................................ [PASS in 10.72s]
+19:53:25  9 of 17 PASS unique_stg_yellow_tripdata_tripid.................................. [PASS in 10.68s]
+19:53:31  13 of 17 PASS relationships_stg_yellow_tripdata_Pickup_locationid__locationid__ref_taxi_zone_lookup_ [PASS in 7.60s]
+19:53:34  14 of 17 PASS relationships_stg_yellow_tripdata_dropoff_locationid__locationid__ref_taxi_zone_lookup_ [PASS in 9.42s]
+19:53:34  15 of 17 START table model week_4.fact_trips.................................... [RUN]
+19:54:28  15 of 17 OK created table model week_4.fact_trips............................... [CREATE TABLE (61.6m rows, 15.1 GB processed) in 54.19s]
+19:54:28  16 of 17 START table model week_4.dm_monthly_zone_revenue....................... [RUN]
+19:54:34  16 of 17 OK created table model week_4.dm_monthly_zone_revenue.................. [CREATE TABLE (12.0k rows, 13.5 GB processed) in 6.32s]
+19:54:34  17 of 17 START test not_null_dm_monthly_zone_revenue_revenue_monthly_total_amount [RUN]
+19:54:36  17 of 17 PASS not_null_dm_monthly_zone_revenue_revenue_monthly_total_amount..... [PASS in 1.57s]
+19:54:36  
+19:54:36  Finished running 2 view models, 1 seed, 11 tests, 3 table models in 88.30s.
+19:54:36  
+19:54:36  Completed successfully
+19:54:36  
+19:54:36  Done. PASS=17 WARN=0 ERROR=0 SKIP=0 TOTAL=17
 ```
 
 Generated documentation:
@@ -487,3 +519,65 @@ dbt docs serve
 ![website](https://user-images.githubusercontent.com/15368390/153768930-e5a4fd52-5570-441e-b93e-9b1e7d6f494a.png)
 
 ![lineage](https://user-images.githubusercontent.com/15368390/153768958-ee1d835f-f838-4d02-885e-22bd725dac40.png)
+
+## Homework
+### Prerequisites
+```sql
+-- Create external table from `fhv_tripdata_2019` parquet files stored in GCS
+CREATE OR REPLACE EXTERNAL TABLE `trips_data_all.external_table_fhv`
+OPTIONS (
+    format = "PARQUET",
+    uris = ["gs://dtc_data_lake_avid-racer-339419/fhv_tripdata_2019-*"]
+);
+-- Query completed in 0.541 sec
+```
+```yml
+# schema.yml
+sources:
+  - name: staging
+    (...)
+    tables:
+      (...)
+      - name: external_table_fhv
+
+models:
+  - name: stg_fhv_tripdata
+    (...)
+```
+
+### Question 1:
+**What is the count of records in the model fact_trips after running all models with the test run variable disabled and filtering for 2019 and 2020 data only (pickup datetime)?**
+```sql
+SELECT count(1)
+FROM `avid-racer-339419.week_4.fact_trips`
+WHERE pickup_datetime > '2019-01-01 00:00:00.000'
+AND pickup_datetime < '2020-12-31 23:59:59.999';
+-- 61602985
+
+???????
+
+SELECT count(1)
+FROM `avid-racer-339419.week_4.fact_trips`
+WHERE pickup_datetime BETWEEN '2019-01-01 00:00:00.000' AND '2020-12-31 23:59:59.999';
+--- 61602986
+```
+
+### Question 2:
+**What is the distribution between service type filtering by years 2019 and 2020 data?**
+![q2](https://user-images.githubusercontent.com/15368390/153948278-c4a02faa-605b-494f-8827-2e1edd24118d.png)
+
+### Question 3:
+**What is the count of records in the model stg_fhv_tripdata after running all models with the test run variable disabled (:false)?**
+```sql
+SELECT COUNT(1)
+FROM `avid-racer-339419.week_4.stg_fhv_tripdata`
+--- 42084899
+```
+
+### Question 4:
+**What is the count of records in the model fact_fhv_trips after running all dependencies with the test run variable disabled (:false)?**
+![q4](https://user-images.githubusercontent.com/15368390/154457179-c938a427-2a31-4b95-ad77-54afae487730.png)
+
+### Question 5:
+**What is the month with the biggest amount of rides after building a tile for the fact_fhv_trips table?**
+![q5](https://user-images.githubusercontent.com/15368390/154455653-fcfa23cd-645f-4797-af42-3932aa14a50c.png)

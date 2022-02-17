@@ -6,7 +6,8 @@ sources:
     schema: trips_data_all # BQ dataset name
     tables:
       - name: external_table_green
-      - name: external_table  # yellow
+      - name: external_table_yellow
+      - name: external_table_fhv
 
 models:
   - name: stg_green_tripdata
@@ -53,7 +54,7 @@ models:
       - name: RateCodeID 
         description: >
             The final rate code in effect at the end of the trip.
-              1= Standard rate
+              1=Standard rate
               2=JFK
               3=Newark
               4=Nassau or Westchester
@@ -191,3 +192,33 @@ models:
         description: Total amount of all tolls paid in trip.
       - name: Total_amount 
         description: The total amount charged to passengers. Does not include cash tips.
+    
+  - name: stg_fhv_tripdata
+    description: > 
+      The For-Hire Vehicle ("FHV") trip records include fields capturing the dispatching base license
+      number and the pick-up date, time, and taxi zone location ID.
+    columns:
+      - name: tripid
+        description: Primary key for this table, generated with a concatenation of dispatching_base_num+pickup_datetime
+        # tests:
+        #   - unique:
+        #     severity: warn
+        #   - not_null:
+        #     severity: warn
+      - name: dispatching_base_num
+        description: The TLC Base License Number of the base that dispatched the trip
+        tests:
+          - not_null:
+            severity: warn
+      - name: pickup_datetime 
+        description: The date and time when the meter was engaged.
+      - name: dropoff_datetime 
+        description: The date and time when the meter was disengaged.
+      - name: pickup_locationid
+        description: locationid where the meter was engaged.
+      - name: dropoff_locationid 
+        description: locationid where the meter was disengaged.
+      - name: SR_Flag 
+        description: >
+          Indicates if the trip was a part of a shared ride chain offered by a High Volume FHV company 
+          (e.g. Uber Pool, Lyft Line). For shared trips, the value is 1. For non-shared rides, this field is null.
