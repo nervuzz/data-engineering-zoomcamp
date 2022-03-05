@@ -11,3 +11,4 @@ https://github.com/DataTalksClub/data-engineering-zoomcamp<br><br>
 ### [Week 2: Data ingestion](https://github.com/nervuzz/data-engineering-zoomcamp/tree/main/WEEK_2)
 ### [Week 3: Data Warehouse](https://github.com/nervuzz/data-engineering-zoomcamp/tree/main/WEEK_3)
 ### [Week 4: Analytics Engineering](https://github.com/nervuzz/data-engineering-zoomcamp/tree/main/WEEK_4)
+### [Week 5: Batch processing](https://github.com/nervuzz/data-engineering-zoomcamp/tree/main/WEEK_5)

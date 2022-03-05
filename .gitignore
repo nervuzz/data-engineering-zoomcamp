@@ -12,3 +12,5 @@ WEEK_2/airflow/dags/__pycache__/*
 *.csv
 *.parquet
 WEEK_4/logs*
+WEEK_5/assets
+WEEK_5/.ipynb_checkpoints
