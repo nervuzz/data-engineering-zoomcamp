@@ -88,3 +88,9 @@ Finally run `jupyter lab` and take your time to play around notebook from `code/
 <br>
 
 # Week 5
+
+This week are going to use `High Volume For-Hire Vehicle Tripdata 2021-02` dataset only.
+```sh
+cd assets
+wget https://nyc-tlc.s3.amazonaws.com/trip+data/fhvhv_tripdata_2021-02.csv
+```
